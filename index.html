@@ -78,52 +78,138 @@
 <body id="game">
 	<div class="field">
 		<h1><img src="images/title.png" alt=""></h1>
-		<div class="container">
-			<div class="relative">
-				<img class="ana" src="images/穴.png">
-				<img class="mogura uwagaki" src="images/モグ2.png">
-			</div>
-			<div class="relative">
-				<img class="ana" src="images/穴.png">
-				<img class="mogura uwagaki" src="images/モグ2.png">
-			</div>
-			<div class="relative">
-				<img class="ana" src="images/穴.png">
-				<img class="mogura uwagaki" src="images/モグ2.png">
-			</div>
+		<div>カウントダウン</div>
+			<div id="timer">５</div>
+			<div>得点</div>
+			<div id="hitCnt">0</div>
+		<button>
+			<a href="" id="start" class="inactive">スタート</a>
+		</button>
+
+	</div>
+	<div class="container">
+		<div class="relative">
+			<img class="ana" src="images/穴.png">
+			<img class="mogura uwagaki" src="">
 		</div>
-		<div class="container">
-			<div class="relative">
-				<img class="ana" src="images/穴.png">
-				<img class="mogura uwagaki" src="images/モグ2.png">
-			</div>
-			<div class="relative">
-				<img class="ana" src="images/穴.png">
-				<img class="mogura uwagaki" src="images/モグ2.png">
-			</div>
-			<div class="relative">
-				<img class="ana" src="images/穴.png">
-				<img class="mogura uwagaki" src="images/モグ2.png">
-			</div>
+		<div class="relative">
+			<img class="ana" src="images/穴.png">
+			<img class="mogura uwagaki" src="">
 		</div>
-		<div class="container">
-			<div class="relative">
-				<img class="ana" src="images/穴.png">
-				<img class="mogura uwagaki" src="images/モグ2.png">
-			</div>
-			<div class="relative">
-				<img class="ana" src="images/穴.png">
-				<img class="mogura uwagaki" src="images/モグ2.png">
-			</div>
-			<div class="relative">
-				<img class="ana" src="images/穴.png">
-				<img class="mogura uwagaki" src="images/モグ2.png">
-			</div>
+		<div class="relative">
+			<img class="ana" src="images/穴.png">
+			<img class="mogura uwagaki" src="">
 		</div>
+	</div>
+	<div class="container">
+		<div class="relative">
+			<img class="ana" src="images/穴.png">
+			<img class="mogura uwagaki" src="">
+		</div>
+		<div class="relative">
+			<img class="ana" src="images/穴.png">
+			<img class="mogura uwagaki" src="">
+		</div>
+		<div class="relative">
+			<img class="ana" src="images/穴.png">
+			<img class="mogura uwagaki" src="">
+		</div>
+	</div>
+	<div class="container">
+		<div class="relative">
+			<img class="ana" src="images/穴.png">
+			<img class="mogura uwagaki" src="">
+		</div>
+		<div class="relative">
+			<img class="ana" src="images/穴.png">
+			<img class="mogura uwagaki" src="">
+		</div>
+		<div class="relative">
+			<img class="ana" src="images/穴.png">
+			<img class="mogura uwagaki" src="">
+		</div>
+	</div>
 	</div>
 
 	<script>
-		// ここにJavaScriptを書く
+		// 全てのもぐらに、クリックイベントを登録
+		// もぐら要素を取得
+		var moguras = document.querySelectorAll(".mogura");
+		// あとの処理で使うため
+		const itaiMogura = "images/モグ1.png";
+		const normalMogura = "images/モグ2.png";
+
+		var count_disp = document.getElementById("hitCnt");
+		var count_value = 0;
+		// モグラランダム表示
+		var showedMogura = setInterval(showMogura, 1000);
+		// モグラストップ
+		this.cnt(this.showedMogura);
+
+		// 0: hide,1:show,2:press
+		for (let index = 0; index < moguras.length; index++) {
+			// モグラの全ての配列の要素を1つ1つ代入(配列)
+			const element = moguras[index];
+			element.moguraStatus = 0;
+			// 上記の要素のモグラ要素にクリックイベントの指示書を追加
+			element.onclick = hitMogura;
+		}
+
+		// もぐらがクリックされた時の処理
+		function hitMogura() {
+			var mogura = event.target
+			mogura.src = "images/モグ1.png";
+
+			count_value += 1;
+			count_disp.innerHTML = count_value;
+			mogura.moguraStatus = 2;
+
+			// 第一引数に実行したい処理
+			setTimeout(recetMogura, 300, mogura);
+		}
+
+		// もぐらが叩かれたら
+		function recetMogura(selectedmogura) {
+			selectedmogura.src = "images/モグ2.png";
+			setTimeout(hideMogura, 1000, selectedmogura);
+		}
+
+		// 出現したモグラが隠れる
+		function hideMogura(showedMogura) {
+			showedMogura.src = "";
+		}
+
+		// モグラを出現する
+		function showMogura(cnt) {
+
+			// 0~9までランダムで表示する
+			var randomNum = Math.floor(Math.random() * 9);
+			moguras[randomNum].src = "images/モグ2.png";
+			var showedMogura = moguras[randomNum].src;
+
+			// 痛い顔を一定時間表示する
+			var setCnt = setInterval((showedMogura) => {
+			}, 1000);
+			// モグラが隠れる
+			setTimeout(hideMogura, 1000, moguras[randomNum]);
+		}
+
+		function cnt(setCnt) {
+			document.querySelector('#start').addEventListener('click', function (e) {
+
+				e.preventDefault();
+				var count = 5;
+				var id = setInterval(function () {
+					count--;
+					document.querySelector('#timer').textContent = count;
+					if (count + 1 <= 0) {
+						clearInterval(id);
+						clearInterval(setCnt);
+						alert('タイムアウト！');
+					};
+				}, 1000);
+			});
+		}
 	</script>
 </body>
 
