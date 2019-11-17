@@ -132,83 +132,130 @@
 	</div>
 
 	<script>
-		// 全てのもぐらに、クリックイベントを登録
-		// もぐら要素を取得
-		var moguras = document.querySelectorAll(".mogura");
-		// あとの処理で使うため
-		const itaiMogura = "images/モグ1.png";
-		const normalMogura = "images/モグ2.png";
+		// インスタンス
+		let gameController = new GameController();
+		// スタート実行
+		gameController.start();
 
-		var count_disp = document.getElementById("hitCnt");
-		var count_value = 0;
-		// モグラランダム表示
-		var showedMogura = setInterval(showMogura, 1000);
-		// モグラストップ
-		this.cnt(this.showedMogura);
+		function GameController() {
+			// もぐら要素取得
+			var moguras = document.querySelectorAll(".mogura");
+			// 得点
+			var score = 0;
 
-		// 0: hide,1:show,2:press
-		for (let index = 0; index < moguras.length; index++) {
-			// モグラの全ての配列の要素を1つ1つ代入(配列)
-			const element = moguras[index];
-			element.moguraStatus = 0;
-			// 上記の要素のモグラ要素にクリックイベントの指示書を追加
-			element.onclick = hitMogura;
-		}
+			for (let index = 0; index < moguras.length; index++) {
+				// モグラの全ての配列の要素を1つ1つ代入(配列)
+				const mogura = moguras[index];
+				new moguraObj(mogura);
+			}
 
-		// もぐらがクリックされた時の処理
-		function hitMogura() {
-			var mogura = event.target
-			mogura.src = "images/モグ1.png";
+			// init
+			this.start = function () {
+				// ランダム表示
+				let interval = setInterval(() => {
+					let random = Math.floor(Math.random() * 9);
+					moguras[random].showMogura();
+				}, 300);
 
-			count_value += 1;
-			count_disp.innerHTML = count_value;
-			mogura.moguraStatus = 2;
+				// 30秒で終了
+				setTimeout(() => {
+					clearTimeout(interval);
+					alert("タイムアウト！ 得点:" + score);
+				}, 10000);
+			}
 
-			// 第一引数に実行したい処理
-			setTimeout(recetMogura, 300, mogura);
-		}
+			// 得点をカウントする
+			this.cntHitMogura = function () {
+				// 初期値
+				let cnt = 0;
+				for (let i = 0; i < this.MOGURAS.length; i++) {
+					if (this.MOGURAS[i].status == 1) {
+						// モグラ状態がHITの場合
+						cnt++;
+					}
+				}
+				return cnt;
+			}
 
-		// もぐらが叩かれたら
-		function recetMogura(selectedmogura) {
-			selectedmogura.src = "images/モグ2.png";
-			setTimeout(hideMogura, 1000, selectedmogura);
-		}
+			// もぐらの状態を管理する
+			function moguraObj(image) {
+				// 切り替え画像達
+				const itaiMogura = "images/モグ1.png";
+				const normalMogura = "images/モグ2.png";
+				this.image = image;
+				// 初期値→いるの？
+				image.status = 0;
+				image.autoHide = "";
+				image.MOGURA_TYPES = [
+					"mogura",
+					"gurasan",
+					"gobu"
+				];
+				image.MOGURA_IMAGES = {
+					mogura: ["", "./images/モグ2.png", "./images/モグ1.png"],
+					gurasan: ["", "./images/モグ3.png", "./images/モグ4.png"],
+					gobu: ["", "./images/ゴブ1.png", "./images/ゴブ2.png"]
+				}
 
-		// 出現したモグラが隠れる
-		function hideMogura(showedMogura) {
-			showedMogura.src = "";
-		}
+				// 状態　0: 非表示　1: 表示　2: クリック
+				const STATUS = {
+					HIDE: 0,
+					SHOW: 1,
+					HIT: 2
+				}
+				// 初期値(非表示) オブジェクトを代入
+				image.status = STATUS.HIDE;
 
-		// モグラを出現する
-		function showMogura(cnt) {
+				// クリックイベント
+				image.onclick = function () {
+					if (image.status == 1) {
+						// 状態が表示の場合→
+						image.status = 2;
+					}
+						// ToDo: 判定文追加
+						score++;
+					// モグラ状態→HIT
+					image.status = STATUS.HIT;
+					image.update();
+					clearTimeout(this.autoHide)
+					setTimeout((image) => { image.hideMogura() }, 500, this);
+				}
+				// 非表示
+				image.hideMogura = function () {
+					image.status = STATUS.HIDE;
+					this.src = "";
+				}
+				// 表示
+				image.showMogura = function () {
+					if (image.status != STATUS.HIDE) {
+						return false;
+					}
+					// モグラタイプを混在
+					image.moguraType = image.setImageType();
+					image.status = STATUS.SHOW;
+					this.src = normalMogura;
+					image.update();
+					this.autoHide = setTimeout((image) => { image.hideMogura() }, 500 + 2000 * Math.random(), this);
+					return true;
+				}
+				// 画像種類の更新
+				image.update = function () {
+					image.src = image.MOGURA_IMAGES[image.moguraType][image.status];
+				}
 
-			// 0~9までランダムで表示する
-			var randomNum = Math.floor(Math.random() * 9);
-			moguras[randomNum].src = "images/モグ2.png";
-			var showedMogura = moguras[randomNum].src;
-
-			// 痛い顔を一定時間表示する
-			var setCnt = setInterval((showedMogura) => {
-			}, 1000);
-			// モグラが隠れる
-			setTimeout(hideMogura, 1000, moguras[randomNum]);
-		}
-
-		function cnt(setCnt) {
-			document.querySelector('#start').addEventListener('click', function (e) {
-
-				e.preventDefault();
-				var count = 5;
-				var id = setInterval(function () {
-					count--;
-					document.querySelector('#timer').textContent = count;
-					if (count + 1 <= 0) {
-						clearInterval(id);
-						clearInterval(setCnt);
-						alert('タイムアウト！');
-					};
-				}, 1000);
-			});
+				// モグラの種類を決定する
+				image.setImageType = function () {
+					let rand = Math.random();
+					// 0:もぐら 1:グラサン 2:ゴブリン
+					if (rand > 0.95) {
+						return image.MOGURA_TYPES[2]; // 0:もぐら 1:グラサン 2:ゴブリン
+					} else if (rand > 0.8) {
+						return image.MOGURA_TYPES[1]; // 0:もぐら 1:グラサン 2:ゴブリン
+					} else {
+						return image.MOGURA_TYPES[0]; // 0:もぐら 1:グラサン 2:ゴブリン
+					}
+				}
+			}
 		}
 	</script>
 </body>
