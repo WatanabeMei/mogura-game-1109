@@ -182,9 +182,11 @@
 				// 初期値
 				this.cnt = 0;
 			}
-			// スコアカウント
-			cntHitMogura() {
-				this.cnt++;
+			// スコアカウント 引数：各ターゲットの持ち点
+			cntHitMogura(targetScore) {
+				this.cnt += targetScore;
+				console.log(this.cnt);
+
 				return this.cnt;
 			}
 			// 最後の合計点表示
@@ -205,14 +207,22 @@
 				this.image = image;
 				this.image.data = this; // ※分からんポイント1
 				this.image.onclick = this.onclick; // 分からんポイント2
-				// 初期値→いるの？
+
+				// 初期値→いるのか？
 				image.status = 0;
 				image.autoHide = "";
+				// ターゲットの種類
 				image.MOGURA_TYPES = [
 					"mogura",
 					"gurasan",
 					"gobu"
 				];
+				// 各ターゲットの持ち点
+				this.TARGET_SCORES = {
+					mogura: 1,
+					gurasan: 2,
+					gobu: 5
+				}
 				image.MOGURA_IMAGES = {
 					mogura: ["", "./images/モグ2.png", "./images/モグ1.png"],
 					gurasan: ["", "./images/モグ3.png", "./images/モグ4.png"],
@@ -229,7 +239,7 @@
 				image.status = STATUS.HIDE;
 			}
 
-			//　以下動き
+			// 以下動き
 			// クリックイベント
 			onclick() {
 				// クリック時の処理
@@ -244,11 +254,11 @@
 					this.image.status = 2;
 				}
 				// スコア加算
-				const hitNum = showScore.cntHitMogura();
+				const hitNum = showScore.cntHitMogura(this.TARGET_SCORES[this.image.moguraType]);
 				// score++;
 				// モグラ状態→HIT
 
-				this.image.status = 2; // 画像ステータス更新　2: HIT
+				this.image.status = 2; // 画像ステータス更新 2: HIT
 				this.update();
 				clearTimeout(this.autoHide)
 				setTimeout((image) => { image.hideMogura() }, 500, this);
@@ -290,6 +300,8 @@
 					return this.image.MOGURA_TYPES[0]; // 0:もぐら 1:グラサン 2:ゴブリン
 				}
 			}
+
+			// モグラの種類によって得点が変わる
 		}
 
 		let showScore = new ShowScore();
