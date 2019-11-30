@@ -81,7 +81,7 @@
 		<div>カウントダウン</div>
 		<div id="timer">５</div>
 		<div>得点</div>
-		<div id="hitCnt">0</div>
+		<div id="latestCnt">0</div>
 		<button>
 			<a href="" id="start" class="inactive">スタート</a>
 		</button>
@@ -146,7 +146,7 @@
 				for (let index = 0; index < moguras.length; index++) {
 					// モグラの全ての配列の要素を1つ1つ代入(配列)
 					const mogura = moguras[index];
-					//　ToDo: 何でnewしているのでしょうか
+					// ToDo: 何でnewしているのでしょうか
 					this.moguraObj.push(new MoguraObj(mogura));
 				}
 			}
@@ -185,7 +185,8 @@
 			// スコアカウント 引数：各ターゲットの持ち点
 			cntHitMogura(targetScore) {
 				this.cnt += targetScore;
-				console.log(this.cnt);
+				this.scoreElelent = document.querySelector("#latestCnt");
+				this.scoreElelent.innerText = this.cnt;
 
 				return this.cnt;
 			}
@@ -198,7 +199,7 @@
 
 		// もぐら状態管理
 		class MoguraObj {
-			// 初期化処理　引数: モグラ情報
+			// 初期化処理 引数: モグラ情報
 			constructor(image) {
 				// 以下属性のまとまり
 				// 切り替え画像達
@@ -229,7 +230,7 @@
 					gobu: ["", "./images/ゴブ1.png", "./images/ゴブ2.png"]
 				}
 
-				// 状態　0: 非表示　1: 表示　2: クリック
+				// 状態 0: 非表示 1: 表示 2: クリック
 				const STATUS = {
 					HIDE: 0,
 					SHOW: 1,
